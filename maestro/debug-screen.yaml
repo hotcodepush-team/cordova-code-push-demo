@@ -1,0 +1,31 @@
+# The debug screen: the button opens the SDK's screen, and the report it
+# shares as text answers why the device did not update — the line the runner
+# expects, the last check's code after incompatible.yaml, whose check skipped
+# a release. By hand:
+# `maestro test -e EXPECTED_LINE='Result: SKIPPED INCOMPATIBLE binary' maestro/debug-screen.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- launchApp
+- tapOn: 'Debug screen'
+- assertVisible: 'Check now'
+- tapOn: 'Share'
+# iOS copies the shared report to the pasteboard, where the runner reads it;
+# Android's share sheet previews the text it was handed, read here.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn: 'Copy'
+      - tapOn: 'Done'
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - assertVisible:
+          id: '.*content_preview_text'
+          text: '.*${EXPECTED_LINE}.*'
+      - back
+      - back
+- assertVisible: 'Sync now'

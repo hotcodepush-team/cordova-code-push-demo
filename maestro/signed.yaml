@@ -1,0 +1,14 @@
+# The signed release: the build carries the app's public key, so the SDK
+# applies a release only once its manifest's signature verifies against it.
+# The runner creates the key, installs a build that carries it and releases
+# through a CI that holds the private half; the flow is the golden path on
+# that build, and the debug screen's report names the key the build trusts.
+# By hand, after `hotcodepush signing-key create` and a rebuild, release and run
+# `maestro test -e EXPECTED_VERSION=v6 -e EXPECTED_RELEASE_NUMBER=5 -e EXPECTED_LINE='Public keys: 1' maestro/signed.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- runFlow: golden-path.yaml
+- runFlow: debug-screen.yaml
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
