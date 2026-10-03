@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: 21
+  # The embed step resolves the channel's name through the API, which this workflow holds no token for;
+  # an id is taken as it is, so the builds here follow a placeholder channel and register nothing.
+  HOTCODEPUSH_CHANNEL: 00000000-0000-4000-8000-000000000001
+
+jobs:
+  web:
+    name: Check and build the web bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+  android:
+    name: Build the Android debug app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: gradle/actions/setup-gradle@v5
+      - run: npm ci
+      - run: npm run build
+      - run: npx cordova prepare android
+      - run: npx cordova compile android --debug
+  ios:
+    name: Build the iOS simulator app
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx cordova prepare ios
+      - run: npx cordova compile ios --debug --emulator

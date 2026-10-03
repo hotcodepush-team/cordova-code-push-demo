@@ -1,0 +1,34 @@
+{
+  "name": "cordova-code-push-demo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The HotCodePush Cordova code push demo app",
+  "license": "MIT",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "fmt": "prettier --write .",
+    "lint": "prettier --check .",
+    "prepare:native": "cordova prepare",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@hotcodepush/cordova-code-push": "https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@d0052e1",
+    "cordova": "13.0.0",
+    "cordova-android": "15.1.0",
+    "cordova-ios": "8.1.1",
+    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@5ce98d5",
+    "prettier": "3.9.8",
+    "typescript": "6.0.3",
+    "vite": "8.3.1"
+  },
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "@hotcodepush/cordova-code-push": {}
+    }
+  }
+}

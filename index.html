@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' gap:; img-src 'self' data:"
+    />
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+    />
+    <title>HotCodePush Demo</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <script src="cordova.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">Bundle version</p>
+        <h1 id="version"></h1>
+      </header>
+      <dl>
+        <div>
+          <dt>Current release</dt>
+          <dd id="current-release">…</dd>
+        </div>
+        <div>
+          <dt>Device id</dt>
+          <dd id="device-id">…</dd>
+        </div>
+        <div>
+          <dt>Last sync</dt>
+          <dd id="last-sync">…</dd>
+        </div>
+        <div>
+          <dt>Last rollback</dt>
+          <dd id="last-rollback">none</dd>
+        </div>
+      </dl>
+      <button id="sync-button" type="button">Sync now</button>
+      <button id="debug-button" class="secondary" type="button">
+        Debug screen
+      </button>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+# The golden path of the demo: the embedded v1 launches, a sync picks up the
+# release the CLI published, and the next start runs it. The runner in the
+# monorepo's e2e/ boots the stack, releases v2 and passes the expected label
+# and release number; by hand, release first and run
+# `maestro test -e EXPECTED_VERSION=v2 -e EXPECTED_RELEASE_NUMBER=1 maestro/golden-path.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'v1'
+- assertVisible: 'embedded'
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+# A device that was offline retries on its next sync; a fresh emulator can be
+# offline for its first seconds, so the tap is repeated a bounded few times.
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+# The sync at start may have staged the release already; either way the last
+# sync settles on one of the two, and next-start installs it on the relaunch.
+- assertVisible: '(UPDATED|UP_TO_DATE).*'
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: ${EXPECTED_VERSION}
+    timeout: 30000
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

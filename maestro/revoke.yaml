@@ -1,0 +1,31 @@
+# The revoke: the app runs the newest release, the operator revokes it, and
+# the next check moves the device to the newest older release it qualifies
+# for, installed at once. Continues from golden-path.yaml, which left the app
+# on the release the runner then revoked; by hand, revoke the running release
+# and run `maestro test -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/revoke.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- launchApp
+# The check at start may move the device on its own; a tap does it otherwise,
+# repeated a bounded few times for a device that was offline.
+- repeat:
+    times: 3
+    while:
+      notVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+      - extendedWaitUntil:
+          visible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+          timeout: 30000
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: ${EXPECTED_VERSION}
+    timeout: 30000
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

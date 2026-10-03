@@ -1,0 +1,48 @@
+# The broken release: the app runs a release that passed readiness, the next
+# one never signals it, so the gate times out and the SDK rolls the app back
+# to the release before, reports the failure and blocklists the bundle — the
+# next check names the broken release and skips it. Continues from
+# golden-path.yaml, which left the app on the release it returns to; the
+# runner releases the broken build and passes its number and label. By hand,
+# release a build whose page loads no script and run
+# `maestro test -e BROKEN_RELEASE_NUMBER=2 -e BROKEN_VERSION=v3 -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/rollback.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- launchApp
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+# The check at start may have staged the broken release already; either way
+# the last sync settles on one of the two, and next-start installs it.
+- assertVisible: '(UPDATED|UP_TO_DATE).*'
+- stopApp
+- launchApp
+# The broken page shows its label and nothing else, until the readiness gate
+# times out and the rollback reloads the release before.
+- extendedWaitUntil:
+    visible: ${BROKEN_VERSION}
+    timeout: 30000
+- extendedWaitUntil:
+    visible: 'from #${BROKEN_RELEASE_NUMBER} · ${BROKEN_VERSION} · READY_TIMEOUT'
+    timeout: 60000
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+# The failed bundle is blocklisted on this device: the next check skips it.
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+- assertVisible: 'SKIPPED · FAILED_BEFORE'
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

@@ -1,0 +1,27 @@
+# The incompatible release: the newest release carries a binary condition this
+# build does not satisfy, so the check skips it with INCOMPATIBLE and the
+# device stays where it is. Continues from revoke.yaml, which left the app on
+# the release it stays on; the runner releases the excluded bundle. By hand,
+# release with a binary range above the app's version and run
+# `maestro test -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/incompatible.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+- launchApp
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+- assertVisible: 'SKIPPED · INCOMPATIBLE'
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
