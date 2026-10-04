@@ -15,6 +15,12 @@ appId: com.hotcodepush.demo.cordova
     while:
       notVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
     commands:
+      # A web view that just loaded, at the launch or on the install the check
+      # at start triggers, is empty in the view hierarchy for a moment, so the
+      # tap waits for the button first.
+      - extendedWaitUntil:
+          visible: 'Sync now'
+          timeout: 30000
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'

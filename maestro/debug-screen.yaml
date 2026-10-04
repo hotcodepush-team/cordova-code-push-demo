@@ -8,6 +8,11 @@
 appId: com.hotcodepush.demo.cordova
 ---
 - launchApp
+# A web view that just loaded is empty in the view hierarchy for a moment, so
+# the tap waits for the button first.
+- extendedWaitUntil:
+    visible: 'Debug screen'
+    timeout: 30000
 - tapOn: 'Debug screen'
 - assertVisible: 'Check now'
 - tapOn: 'Share'
