@@ -11,9 +11,6 @@ permissions:
 
 env:
   JAVA_VERSION: 21
-  # The embed step resolves the channel's name through the API, which this workflow holds no token for;
-  # an id is taken as it is, so the builds here follow a placeholder channel and register nothing.
-  HOTCODEPUSH_CHANNEL: 00000000-0000-4000-8000-000000000001
 
 jobs:
   web:
@@ -32,6 +29,9 @@ jobs:
   android:
     name: Build the Android debug app
     runs-on: ubuntu-latest
+    env:
+      # The build step holds no token here: it builds without the API, and the app it builds names no channel.
+      HOTCODEPUSH_OFFLINE: '1'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
@@ -50,6 +50,9 @@ jobs:
   ios:
     name: Build the iOS simulator app
     runs-on: macos-latest
+    env:
+      # The build step holds no token here: it builds without the API, and the app it builds names no channel.
+      HOTCODEPUSH_OFFLINE: '1'
     steps:
       - uses: actions/checkout@v7
       - uses: maxim-lobanov/setup-xcode@v1

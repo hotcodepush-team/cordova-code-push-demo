@@ -11,7 +11,7 @@ npm run build
 npx cordova prepare
 ```
 
-`npx cordova prepare` restores the platforms and the plugin from `package.json`, copies the web build into each platform, and runs the plugin's embed step, which writes the resource file `hotcodepush.json` beside the copied assets and registers the store build; log in first with `npx hotcodepush login`, since the step resolves the channel's name through the API.
+`npx cordova prepare` restores the platforms and the plugin from `package.json`, copies the web build into each platform, and runs the plugin's build step, `npx hotcodepush binary create`, which writes the resource file `hotcodepush.json` beside the copied assets and creates the store build, the binary; log in first with `npx hotcodepush login`, since without a token the file names no channel and the app takes no updates.
 Open `platforms/ios/App.xcworkspace` in Xcode or `platforms/android` in Android Studio and run the app, or use `npx cordova run ios` and `npx cordova run android`.
 Point it at another host, the local stack or staging, by setting `HOTCODEPUSH_FILES_BASE_URL` and `HOTCODEPUSH_UPDATES_BASE_URL` before `npx cordova prepare`.
 
@@ -30,7 +30,7 @@ The SDK reference is at [hotcodepush.com/docs/cordova](https://hotcodepush.com/d
 npm run lint             # Prettier
 npm run typecheck        # TypeScript
 npm run build            # the web bundle into www/
-npm run prepare:native   # cordova prepare, whose embed hook writes the resource file into each platform
+npm run prepare:native   # cordova prepare, whose hook runs binary create and writes the resource file into each platform
 ```
 
 The flows in `maestro/` are the update lifecycle contract, the device test the monorepo's `e2e/` runner drives on the simulator and the emulator: `golden-path.yaml` takes a release on a fresh install, `rollback.yaml` survives a build that never signals readiness, `revoke.yaml` leaves a revoked release for the older one, `incompatible.yaml` skips a release its binary does not qualify for, `debug-screen.yaml` opens the debug screen and shares its report, which names that skip's code, and `signed.yaml` takes a signed release on a build whose report names the public key it carries.

@@ -21,13 +21,13 @@ platforms/, plugins/ Cordova's, restored by `cordova prepare` from package.json;
 
 ## Commands
 
-| Command                  | Does                                                                   |
-| ------------------------ | ---------------------------------------------------------------------- |
-| `npm run build`          | the web bundle into `www/`                                             |
-| `npm run prepare:native` | `cordova prepare`, which runs the embed hook writing the resource file |
-| `npm run lint`           | Prettier                                                               |
-| `npm run typecheck`      | TypeScript                                                             |
-| `npm run dev`            | Vite in the browser, where no plugin exists and the screen stays empty |
+| Command                  | Does                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------- |
+| `npm run build`          | the web bundle into `www/`                                                    |
+| `npm run prepare:native` | `cordova prepare`, whose hook runs `binary create`, writing the resource file |
+| `npm run lint`           | Prettier                                                                      |
+| `npm run typecheck`      | TypeScript                                                                    |
+| `npm run dev`            | Vite in the browser, where no plugin exists and the screen stays empty        |
 
 Run `npm run fmt` before every commit.
 The native builds: `npx cordova compile ios --debug --emulator` and `npx cordova compile android --debug`, both after `npm run build && npx cordova prepare`.
@@ -36,7 +36,7 @@ The package is CommonJS on purpose: Cordova `require`s the scripts it generates 
 ## The resource file
 
 The SDK reads `www/hotcodepush.json` in each platform, from the app bundle on iOS and from `assets/` on Android: the project's file plus `builtAt`, `fingerprint`, `embeddedBundleManifest` and `embeddedBundleId`.
-The plugin's `after_prepare` hook, `npx hotcodepush bundle embed`, writes it on every `cordova prepare` and `cordova build`, after Cordova copied `www/` into the platform, and registers the store build's embedded bundle under the session or `HOTCODEPUSH_TOKEN`; the channel's name is resolved through the API, so a prepare without a credential fails unless `HOTCODEPUSH_CHANNEL` names a channel id, as `ci.yml` does.
+The plugin's `after_prepare` hook, `npx hotcodepush binary create`, writes it on every `cordova prepare` and `cordova build`, after Cordova copied `www/` into the platform, and creates the store build, the binary, under the session or `HOTCODEPUSH_TOKEN`; without a token on a person's machine, or with `HOTCODEPUSH_OFFLINE=1` as `ci.yml` sets it, the file names no channel and the app takes no updates, and a pipeline without either fails.
 The CLI is the `hotcodepush` devDependency, pinned like the SDK to the pkg.pr.new build of one commit, so `npx hotcodepush` resolves from `node_modules`.
 `HOTCODEPUSH_FILES_BASE_URL` and `HOTCODEPUSH_UPDATES_BASE_URL` point the SDK at another host, the local stack or staging.
 
