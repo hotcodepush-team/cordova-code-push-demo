@@ -6,9 +6,21 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self' gap:; img-src 'self' data:"
     />
+    <!--
+      No viewport-fit=cover: cordova-ios shows the web view only once the page has loaded and hands it the safe-area
+      insets after that, so a page that pads itself by them jumps right when it appears. Cordova insets the web view
+      instead and paints the strip behind the status bar in the theme colour, the page's background.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
-      name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0"
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#ffffff"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0a0a0a"
     />
     <title>HotCodePush Demo</title>
     <link rel="stylesheet" href="/src/style.css" />

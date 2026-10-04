@@ -38,8 +38,7 @@ main {
   gap: 40px;
   max-width: 480px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 64px) 24px
-    calc(env(safe-area-inset-bottom) + 32px);
+  padding: 64px 24px 32px;
 }
 
 header {
