@@ -13,11 +13,11 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@hotcodepush/cordova-code-push": "https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@3384c89",
+    "@hotcodepush/cordova-code-push": "https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@5788279",
     "cordova": "13.0.0",
     "cordova-android": "15.1.0",
     "cordova-ios": "8.1.1",
-    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@2c9b997",
+    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@71be98d",
     "prettier": "3.9.8",
     "typescript": "6.0.3",
     "vite": "8.3.1"
