@@ -44,7 +44,7 @@ The CLI is the `hotcodepush` devDependency, pinned like the SDK to the pkg.pr.ne
 
 The SDK is pinned to the pkg.pr.new build of one commit, `https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@<sha>`, never `@main`; a bump is one edit of that sha, and `package.json`'s `cordova.plugins` lists the plugin so `cordova prepare` restores it.
 The CLI is pinned the same way, `https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@<sha>`.
-The SDK's cores come at the commits the SDK pins: the iOS one through Swift Package Manager, the Android one through JitPack, which the plugin adds to the app module's repositories.
+The SDK's cores come at the commits the SDK pins: the iOS one through Swift Package Manager, the Android one through core-android's `maven` branch, which the plugin adds to the app module's repositories.
 Every other dependency is pinned to an exact version and bumped by Renovate.
 
 ## Agent workspace
