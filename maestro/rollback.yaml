@@ -19,7 +19,7 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · OFFLINE.*'
+      visible: 'FAILED · DEVICE_OFFLINE.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
@@ -36,7 +36,7 @@ appId: com.hotcodepush.demo.cordova
     visible: ${BROKEN_VERSION}
     timeout: 30000
 - extendedWaitUntil:
-    visible: 'from #${BROKEN_RELEASE_NUMBER} · ${BROKEN_VERSION} · READY_TIMEOUT'
+    visible: 'from #${BROKEN_RELEASE_NUMBER} · ${BROKEN_VERSION} · READINESS_TIMED_OUT'
     timeout: 60000
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
 # The failed bundle is blocklisted on this device: the next check skips it.
@@ -44,5 +44,5 @@ appId: com.hotcodepush.demo.cordova
 - extendedWaitUntil:
     notVisible: 'syncing…'
     timeout: 60000
-- assertVisible: 'SKIPPED · FAILED_BEFORE'
+- assertVisible: 'SKIPPED · BUNDLE_FAILED_BEFORE'
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

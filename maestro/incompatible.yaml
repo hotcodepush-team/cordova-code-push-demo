@@ -1,5 +1,5 @@
 # The incompatible release: the newest release carries a binary condition this
-# build does not satisfy, so the check skips it with INCOMPATIBLE and the
+# build does not satisfy, so the check skips it with DEVICE_INCOMPATIBLE and the
 # device stays where it is. Continues from revoke.yaml, which left the app on
 # the release it stays on; the runner releases the excluded bundle. By hand,
 # release with a binary range above the app's version and run
@@ -17,11 +17,11 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · OFFLINE.*'
+      visible: 'FAILED · DEVICE_OFFLINE.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-- assertVisible: 'SKIPPED · INCOMPATIBLE'
+- assertVisible: 'SKIPPED · DEVICE_INCOMPATIBLE'
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

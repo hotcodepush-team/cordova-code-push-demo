@@ -20,7 +20,7 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · OFFLINE.*'
+      visible: 'FAILED · DEVICE_OFFLINE.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
