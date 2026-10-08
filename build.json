@@ -1,0 +1,10 @@
+{
+  "android": {
+    "release": {
+      "alias": "androiddebugkey",
+      "keystore": "~/.android/debug.keystore",
+      "password": "android",
+      "storePassword": "android"
+    }
+  }
+}
