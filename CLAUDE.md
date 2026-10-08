@@ -21,22 +21,22 @@ platforms/, plugins/ Cordova's, restored by `cordova prepare` from package.json;
 
 ## Commands
 
-| Command                  | Does                                                                          |
-| ------------------------ | ----------------------------------------------------------------------------- |
-| `npm run build`          | the web bundle into `www/`                                                    |
-| `npm run prepare:native` | `cordova prepare`, whose hook runs `binary create`, writing the resource file |
-| `npm run lint`           | Prettier                                                                      |
-| `npm run typecheck`      | TypeScript                                                                    |
-| `npm run dev`            | Vite in the browser, where no plugin exists and the screen stays empty        |
+| Command                  | Does                                                                                                                   |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `npm run build`          | the web bundle into `www/`                                                                                             |
+| `npm run prepare:native` | `cordova prepare`, restoring the platforms and the plugin, whose hook adds the build step's phase to the Xcode project |
+| `npm run lint`           | Prettier                                                                                                               |
+| `npm run typecheck`      | TypeScript                                                                                                             |
+| `npm run dev`            | Vite in the browser, where no plugin exists and the screen stays empty                                                 |
 
 Run `npm run fmt` before every commit.
-The native builds: `npx cordova compile ios --debug --emulator` and `npx cordova compile android --debug`, both after `npm run build && npx cordova prepare`.
+The native builds: `npx cordova compile ios --debug --emulator` and `npx cordova compile android --debug`, both after `npm run build && npx cordova prepare`; the store builds, which create the binary: `xcodebuild archive -workspace App.xcworkspace -scheme App -configuration Release -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO` in `platforms/ios`, the app landing at `Products/Release-iphonesimulator/HotCodePush Demo.app`, and `npx cordova build android --release -- --packageType=apk`, signed through `build.json` with the debug keystore.
 The package is CommonJS on purpose: Cordova `require`s the scripts it generates under `platforms/`, which an ES-module package would break.
 
 ## The resource file
 
 The SDK reads `www/hotcodepush.json` in each platform, from the app bundle on iOS and from `assets/` on Android: the project's file plus `builtAt`, `fingerprint`, `embeddedBundleManifest` and `embeddedBundleId`.
-The plugin's `after_prepare` hook, `npx hotcodepush binary create`, writes it on every `cordova prepare` and `cordova build`, after Cordova copied `www/` into the platform, and creates the store build, the binary, under the session or `HOTCODEPUSH_TOKEN`; without a token on a person's machine, or with `HOTCODEPUSH_OFFLINE=1` as `ci.yml` sets it, the file names no channel and the app takes no updates, and a pipeline without either fails.
+The native build writes it: the plugin's Gradle task per variant and the Xcode phase its hook adds on `cordova platform add` and every `cordova prepare`, after Cordova copied `www/` into the platform. An archive or a release variant runs `binary create`, which also creates the store build's binary under the session or `HOTCODEPUSH_TOKEN`, the version and build read from the build itself; every other build runs `resource-file write`. Without a token on a person's machine, or with `HOTCODEPUSH_OFFLINE=1` as `ci.yml` sets it, the file names no channel and the app takes no updates; a pipeline's store build without either fails. `build.json` signs the Android release build with the debug keystore the Android Gradle plugin creates on the first debug build, so the device test installs the release APK a customer ships.
 The CLI is the `hotcodepush` devDependency, pinned like the SDK to the pkg.pr.new build of one commit, so `npx hotcodepush` resolves from `node_modules`.
 `HOTCODEPUSH_FILES_BASE_URL` and `HOTCODEPUSH_UPDATES_BASE_URL` point the SDK at another host, the local stack or staging.
 
