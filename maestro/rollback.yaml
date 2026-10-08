@@ -25,9 +25,9 @@ appId: com.hotcodepush.demo.cordova
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-# The check at start may have staged the broken release already; either way
-# the last sync settles on one of the two, and next-start installs it.
-- assertVisible: '(UPDATED|UP_TO_DATE).*'
+# The check at start may have downloaded the broken release already; either
+# way the last sync settles on one of the two, and next-start applies it.
+- assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
 - stopApp
 - launchApp
 # The broken page shows its label and nothing else, until the readiness gate

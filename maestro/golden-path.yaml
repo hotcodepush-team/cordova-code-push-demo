@@ -26,9 +26,10 @@ appId: com.hotcodepush.demo.cordova
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-# The sync at start may have staged the release already; either way the last
-# sync settles on one of the two, and next-start installs it on the relaunch.
-- assertVisible: '(UPDATED|UP_TO_DATE).*'
+# The sync at start may have downloaded the release already; either way the
+# last sync settles on one of the two, and next-start applies it on the
+# relaunch.
+- assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
 - stopApp
 - launchApp
 - extendedWaitUntil:

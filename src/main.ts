@@ -1,8 +1,4 @@
-import type {
-  CheckResult,
-  Release,
-  SyncResult,
-} from '@hotcodepush/cordova-code-push';
+import type { Release, SyncResult } from '@hotcodepush/cordova-code-push';
 
 // Change it, build, release: the label is how you see the update land.
 const VERSION = 'v1';
@@ -19,7 +15,7 @@ versionHeading.textContent = VERSION;
 // The plugin is on `window.HotCodePush` once Cordova has loaded it, which `deviceready` says.
 document.addEventListener('deviceready', () => {
   // Fired once, on the start that follows a rollback: the release that failed and why.
-  void HotCodePush.addListener('rolledBack', event => {
+  void HotCodePush.addListener('updateRolledBack', event => {
     lastRollbackText.textContent = `from ${resolveReleaseText(event.from)} · ${event.reason}`;
   });
   syncButton.addEventListener('click', () => void syncNow());
@@ -64,14 +60,16 @@ function resolveReleaseText(release: Release | null): string {
   return release ? `#${release.number} · ${release.bundleVersion}` : 'embedded';
 }
 
-function resolveResultText(result: CheckResult | SyncResult): string {
+function resolveResultText(result: SyncResult): string {
   switch (result.status) {
     case 'UP_TO_DATE':
       return 'UP_TO_DATE';
     case 'AVAILABLE':
       return `AVAILABLE · ${resolveReleaseText(result.release)}`;
-    case 'UPDATED':
-      return `UPDATED · ${resolveReleaseText(result.release)}, installs ${result.installAt}`;
+    case 'DOWNLOADED':
+      return `DOWNLOADED · ${resolveReleaseText(result.release)}, applies ${result.applyAt}`;
+    case 'APPLIED':
+      return `APPLIED · ${resolveReleaseText(result.release)}`;
     case 'SKIPPED':
       return `SKIPPED · ${result.reason}`;
     case 'FAILED':
