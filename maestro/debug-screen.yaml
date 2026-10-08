@@ -7,7 +7,11 @@
 # values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-- launchApp
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
 # A web view that just loaded is empty in the view hierarchy for a moment, so
 # the tap waits for the button first.
 - extendedWaitUntil:

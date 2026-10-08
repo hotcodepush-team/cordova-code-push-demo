@@ -7,7 +7,11 @@
 # values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-- launchApp
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
 # The check at start may move the device on its own; a tap does it otherwise,
 # repeated a bounded few times for a device that was offline.
 - repeat:
@@ -30,7 +34,9 @@ appId: com.hotcodepush.demo.cordova
           timeout: 30000
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
 - stopApp
-- launchApp
+- launchApp:
+    permissions:
+      notifications: allow
 - extendedWaitUntil:
     visible: ${EXPECTED_VERSION}
     timeout: 30000

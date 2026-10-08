@@ -10,7 +10,11 @@
 # values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-- launchApp
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
 - tapOn: 'Sync now'
 - extendedWaitUntil:
@@ -29,7 +33,9 @@ appId: com.hotcodepush.demo.cordova
 # way the last sync settles on one of the two, and next-start applies it.
 - assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
 - stopApp
-- launchApp
+- launchApp:
+    permissions:
+      notifications: allow
 # The broken page shows its label and nothing else, until the readiness gate
 # times out and the rollback reloads the release before.
 - extendedWaitUntil:

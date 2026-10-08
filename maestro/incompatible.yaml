@@ -8,7 +8,11 @@
 # values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-- launchApp
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
 - tapOn: 'Sync now'
 - extendedWaitUntil:
