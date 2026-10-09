@@ -3,12 +3,24 @@
 # for, applied at once. Continues from golden-path.yaml, which left the app
 # on the release the runner then revoked; by hand, revoke the running release
 # and run `maestro test -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/revoke.yaml`.
+# The check at start may make the move itself, reloading the page in place,
+# and a reload that lands while Maestro reads leaves Android's view hierarchy
+# empty for the rest of the process, so the flow waits a bounded time for the
+# move and relaunches the app before it reads the screen.
 # No `env:` header: Maestro defines it after the `-e` parameters, so its
 # values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
 # Every launch names its permissions: Maestro's default allows all, and its
 # location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+    timeout: 30000
+    optional: true
+- stopApp
 - launchApp:
     permissions:
       notifications: allow
