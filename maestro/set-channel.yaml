@@ -1,0 +1,64 @@
+# The runtime channel: the button switches the device to the channel named
+# `beta` through `setChannel`, which stores the name and fetches nothing, so
+# the screen names it as the runtime choice; the next sync looks the name up
+# in the app's channels index, where no channel is discoverable by it, and
+# fails with CHANNEL_UNKNOWN. The other button clears the choice with
+# `setChannel(null)`, the configured channel is back, and the next sync finds
+# the device up to date on the release it never left. Continues from
+# signed.yaml, which left the app on the newest release; by hand, on an app
+# that runs the newest release, run
+# `maestro test -e EXPECTED_RELEASE_NUMBER=7 -e EXPECTED_VERSION=v8 maestro/set-channel.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+    timeout: 30000
+- assertVisible: '.* · config'
+# The method buttons sit below the fold on a phone's screen.
+- scrollUntilVisible:
+    element: 'Set channel beta'
+- tapOn: 'Set channel beta'
+- extendedWaitUntil:
+    visible: 'beta · runtime'
+    timeout: 10000
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+# A device that was offline retries on its next sync.
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · DEVICE_OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+- assertVisible: 'FAILED · CHANNEL_UNKNOWN.*'
+- tapOn: 'Clear channel'
+- extendedWaitUntil:
+    visible: '.* · config'
+    timeout: 10000
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · DEVICE_OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+- assertVisible: 'UP_TO_DATE'
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

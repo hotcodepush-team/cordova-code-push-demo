@@ -89,6 +89,12 @@ dd {
   gap: 12px;
 }
 
+.secondary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 button {
   padding: 14px;
   border: 1px solid var(--accent);

@@ -1,0 +1,56 @@
+# The app's own rollback: the button calls `rollbackUpdate` with a reason on
+# the release the device runs, which the SDK marks failed on this device and
+# leaves at once, reloading the page onto the embedded bundle, since the
+# release it leaves is the confirmed one; the reloaded page's
+# updateRolledBack listener names the release with APP_REQUESTED, and the
+# next check skips it BUNDLE_FAILED_BEFORE. Continues from clear-updates.yaml,
+# which left the app on the newest release; by hand, on an app that runs it,
+# run
+# `maestro test -e ROLLED_BACK_RELEASE_NUMBER=7 -e ROLLED_BACK_VERSION=v8 -e EXPECTED_VERSION=v1 maestro/rollback-update.yaml`.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: '#${ROLLED_BACK_RELEASE_NUMBER} · ${ROLLED_BACK_VERSION}'
+    timeout: 30000
+# The method buttons sit below the fold on a phone's screen.
+- scrollUntilVisible:
+    element: 'Roll back'
+- tapOn: 'Roll back'
+# The event belongs to the page the SDK's own reload starts, the one place it
+# is read.
+- extendedWaitUntil:
+    visible: 'from #${ROLLED_BACK_RELEASE_NUMBER} · ${ROLLED_BACK_VERSION} · APP_REQUESTED'
+    timeout: 30000
+# Every read after it is of a process that started on the embedded bundle.
+- stopApp
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: ${EXPECTED_VERSION}
+    timeout: 30000
+- assertVisible: 'embedded'
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+# A device that was offline retries on its next sync.
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · DEVICE_OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+# The rolled-back bundle is on this device's failed list: the check skips it.
+- assertVisible: 'SKIPPED · BUNDLE_FAILED_BEFORE'
+- assertVisible: 'embedded'

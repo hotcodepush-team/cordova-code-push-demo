@@ -1,0 +1,65 @@
+# Clearing the updates: the button calls `clearUpdates` on the release the
+# device runs, which drops every downloaded update and the list of failed
+# bundles and reloads the page onto the embedded bundle; the next sync
+# downloads the release anew, and the next start runs it again. Continues from
+# set-channel.yaml, which left the app on the newest release; by hand, on an
+# app that runs it, run
+# `maestro test -e EXPECTED_RELEASE_NUMBER=7 -e EXPECTED_VERSION=v8 -e EMBEDDED_VERSION=v1 maestro/clear-updates.yaml`.
+# The SDK reloads the page in place, and a reload that lands while Maestro
+# reads can leave Android's view hierarchy empty for the rest of the process,
+# so the flow waits a bounded time for the move and relaunches the app before
+# it reads the screen.
+# No `env:` header: Maestro defines it after the `-e` parameters, so its
+# values would override them.
+appId: com.hotcodepush.demo.cordova
+---
+# Every launch names its permissions: Maestro's default allows all, and its
+# location grant can hang the iOS simulator on Xcode 27 for minutes.
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
+    timeout: 30000
+# The method buttons sit below the fold on a phone's screen.
+- scrollUntilVisible:
+    element: 'Clear updates'
+- tapOn: 'Clear updates'
+- extendedWaitUntil:
+    visible: 'embedded'
+    timeout: 30000
+    optional: true
+- stopApp
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: ${EMBEDDED_VERSION}
+    timeout: 30000
+- assertVisible: 'embedded'
+- tapOn: 'Sync now'
+- extendedWaitUntil:
+    notVisible: 'syncing…'
+    timeout: 60000
+# A device that was offline retries on its next sync.
+- repeat:
+    times: 3
+    while:
+      visible: 'FAILED · DEVICE_OFFLINE.*'
+    commands:
+      - tapOn: 'Sync now'
+      - extendedWaitUntil:
+          notVisible: 'syncing…'
+          timeout: 60000
+# The sync at start may have downloaded the release already; either way the
+# last sync settles on one of the two, and next-start applies it on the
+# relaunch.
+- assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
+- stopApp
+- launchApp:
+    permissions:
+      notifications: allow
+- extendedWaitUntil:
+    visible: ${EXPECTED_VERSION}
+    timeout: 30000
+- assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
