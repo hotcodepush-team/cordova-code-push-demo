@@ -1,6 +1,6 @@
 # Cordova code push demo by HotCodePush
 
-The demo app for [Cordova code push](https://hotcodepush.com/cordova-code-push) with `@hotcodepush/cordova-code-push`: one screen showing the bundle version, the current release, the device id and the last rollback, a button that syncs now and one that opens the debug screen.
+The demo app for [Cordova code push](https://hotcodepush.com/cordova-code-push) with `@hotcodepush/cordova-code-push`: one screen showing the bundle version, the current release, the channel with its source, the device id and the last rollback, a button that syncs now, one that opens the debug screen, and four that call the other methods: set the channel to `beta`, clear it, roll back, and clear the updates.
 
 ## Installation
 
@@ -35,7 +35,8 @@ npm run prepare:native   # cordova prepare, whose hook adds the build step's pha
 ```
 
 The flows in `maestro/` are the update lifecycle contract, the device test the monorepo's `e2e/` runner drives on the simulator and the emulator: `golden-path.yaml` takes a release on a fresh install, `rollback.yaml` survives a build that never signals readiness, `revoke.yaml` leaves a revoked release for the older one, `incompatible.yaml` skips a release its binary does not qualify for, `debug-screen.yaml` opens the debug screen and shares its report, which names that skip's code, `invalid-signature.yaml` shows a build that carries a public key refusing a release that is unsigned or signed with a key it does not trust, and `signed.yaml` takes a signed release on a build whose report names the public key it carries.
-Each flow after the first continues where the one before left the app, except these last two, which start on the fresh builds the runner installs with a key in their configuration; the runner publishes the releases in between and passes each flow its numbers. By hand, install the app, release `v2` with the CLI, then `maestro test -e EXPECTED_VERSION=v2 -e EXPECTED_RELEASE_NUMBER=1 maestro/golden-path.yaml`, and each flow's header names what it expects.
+Three method flows follow `signed.yaml` and tap the screen's buttons: `set-channel.yaml` sets a channel the app does not know, sees the sync fail with `CHANNEL_UNKNOWN`, clears it and syncs `UP_TO_DATE` on the configured one again; `clear-updates.yaml` returns the app to the embedded bundle and lets the next sync download the release anew; `rollback-update.yaml` has the app roll itself back, which reports `APP_REQUESTED`, lands on the embedded bundle and leaves the release blocklisted.
+Each flow after the first continues where the one before left the app, except the two signature flows, which start on the fresh builds the runner installs with a key in their configuration; the runner publishes the releases in between and passes each flow its numbers. By hand, install the app, release `v2` with the CLI, then `maestro test -e EXPECTED_VERSION=v2 -e EXPECTED_RELEASE_NUMBER=1 maestro/golden-path.yaml`, and each flow's header names what it expects.
 
 ## License
 
