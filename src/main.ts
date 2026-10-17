@@ -33,7 +33,7 @@ versionHeading.textContent = VERSION;
 document.addEventListener('deviceready', () => {
   // Fired once, on the start that follows a rollback: the release that failed and why.
   void HotCodePush.addListener('updateRolledBack', event => {
-    lastRollbackText.textContent = `from ${resolveReleaseText(event.from)} · ${event.reason}`;
+    lastRollbackText.textContent = `from ${resolveReleaseText(event.fromRelease)} · ${event.reason}`;
   });
   syncButton.addEventListener('click', () => void syncNow());
   debugButton.addEventListener(
@@ -132,7 +132,7 @@ function resolveResultText(result: SyncResult): string {
     case 'AVAILABLE':
       return `AVAILABLE · ${resolveReleaseText(result.release)}`;
     case 'DOWNLOADED':
-      return `DOWNLOADED · ${resolveReleaseText(result.release)}, applies ${result.applyAt}`;
+      return `DOWNLOADED · ${resolveReleaseText(result.release)}, applies ${result.applyStrategy}`;
     case 'APPLIED':
       return `APPLIED · ${resolveReleaseText(result.release)}`;
     case 'SKIPPED':
