@@ -1,6 +1,6 @@
 # The refused release: the build carries a public key, and the newest release
 # is unsigned, or signed with a key the build does not trust, so the SDK
-# refuses it with SIGNATURE_INVALID and the app stays on its embedded bundle.
+# refuses it with signature_invalid and the app stays on its embedded bundle.
 # Runs on the fresh build the runner installs with a key in its
 # configuration, once before the app has a signing key and once after. By
 # hand, add a key to `publicKeys` in `hotcodepush.json`, rebuild, release
@@ -24,11 +24,11 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · DEVICE_OFFLINE.*'
+      visible: 'failed · device_offline.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-- assertVisible: 'FAILED · SIGNATURE_INVALID.*'
+- assertVisible: 'failed · signature_invalid.*'
 - assertVisible: 'embedded'

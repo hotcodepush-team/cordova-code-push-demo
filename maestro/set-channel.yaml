@@ -2,7 +2,7 @@
 # `beta` through `setChannel`, which stores the name and fetches nothing, so
 # the screen names it as the runtime choice; the next sync looks the name up
 # in the app's channels index, where no channel is discoverable by it, and
-# fails with CHANNEL_UNKNOWN. The other button clears the choice with
+# fails with channel_unknown. The other button clears the choice with
 # `setChannel(null)`, the configured channel is back, and the next sync finds
 # the device up to date on the release it never left. Continues from
 # signed.yaml, which left the app on the newest release; by hand, on an app
@@ -36,13 +36,13 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · DEVICE_OFFLINE.*'
+      visible: 'failed · device_offline.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-- assertVisible: 'FAILED · CHANNEL_UNKNOWN.*'
+- assertVisible: 'failed · channel_unknown.*'
 - tapOn: 'Clear channel'
 - extendedWaitUntil:
     visible: '.* · config'
@@ -54,11 +54,11 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · DEVICE_OFFLINE.*'
+      visible: 'failed · device_offline.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-- assertVisible: 'UP_TO_DATE'
+- assertVisible: 'up_to_date'
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

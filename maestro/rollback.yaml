@@ -23,15 +23,15 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · DEVICE_OFFLINE.*'
+      visible: 'failed · device_offline.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
 # The check at start may have downloaded the broken release already; either
-# way the last sync settles on one of the two, and next-start applies it.
-- assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
+# way the last sync settles on one of the two, and next_start applies it.
+- assertVisible: '(downloaded|up_to_date).*'
 - stopApp
 - launchApp:
     permissions:
@@ -42,7 +42,7 @@ appId: com.hotcodepush.demo.cordova
     visible: ${BROKEN_VERSION}
     timeout: 30000
 - extendedWaitUntil:
-    visible: 'from #${BROKEN_RELEASE_NUMBER} · ${BROKEN_VERSION} · READINESS_TIMED_OUT'
+    visible: 'from #${BROKEN_RELEASE_NUMBER} · ${BROKEN_VERSION} · readiness_timed_out'
     timeout: 60000
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
 # The failed bundle is blocklisted on this device: the next check skips it.
@@ -50,5 +50,5 @@ appId: com.hotcodepush.demo.cordova
 - extendedWaitUntil:
     notVisible: 'syncing…'
     timeout: 60000
-- assertVisible: 'SKIPPED · BUNDLE_FAILED_BEFORE'
+- assertVisible: 'skipped · bundle_failed_before'
 - assertVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'

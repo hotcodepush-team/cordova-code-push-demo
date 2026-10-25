@@ -45,16 +45,16 @@ appId: com.hotcodepush.demo.cordova
 - repeat:
     times: 3
     while:
-      visible: 'FAILED · DEVICE_OFFLINE.*'
+      visible: 'failed · device_offline.*'
     commands:
       - tapOn: 'Sync now'
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
 # The sync at start may have downloaded the release already; either way the
-# last sync settles on one of the two, and next-start applies it on the
+# last sync settles on one of the two, and next_start applies it on the
 # relaunch.
-- assertVisible: '(DOWNLOADED|UP_TO_DATE).*'
+- assertVisible: '(downloaded|up_to_date).*'
 - stopApp
 - launchApp:
     permissions:
