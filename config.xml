@@ -14,8 +14,6 @@
         </edit-config>
     </platform>
     <platform name="ios">
-        <!-- The oldest deployment target the current Xcode builds for; the plugin itself runs from iOS 13. -->
-        <preference name="deployment-target" value="15.0" />
         <!-- The local stack the device test runs against is plain HTTP on the host. -->
         <edit-config file="*-Info.plist" mode="merge" target="NSAppTransportSecurity">
             <dict>
