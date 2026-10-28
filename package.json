@@ -17,10 +17,10 @@
     "cordova": "13.0.0",
     "cordova-android": "15.1.0",
     "cordova-ios": "8.1.1",
-    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@4eba9a15547714910e489b7a273c787c57862151",
+    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@461a4fa68600776733725c3fdbf702e0e4762a05",
     "prettier": "3.9.8",
     "typescript": "6.0.3",
-    "vite": "8.3.1"
+    "vite": "8.3.5"
   },
   "cordova": {
     "platforms": [
@@ -29,6 +29,11 @@
     ],
     "plugins": {
       "@hotcodepush/cordova-code-push": {}
+    }
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "11.1.1"
     }
   }
 }
