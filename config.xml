@@ -13,7 +13,6 @@
         </edit-config>
     </platform>
     <platform name="ios">
-        <!-- The device test runs against a local stack on the host over plain HTTP. -->
         <edit-config file="*-Info.plist" mode="merge" target="NSAppTransportSecurity">
             <dict>
                 <key>NSAllowsLocalNetworking</key>
