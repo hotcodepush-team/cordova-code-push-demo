@@ -1,20 +1,13 @@
-# The golden path of the demo: the embedded v1 launches, a sync picks up the
-# release the CLI published, and the next start runs it. The runner in the
-# monorepo's e2e/ boots the stack, releases v2 and passes the expected label
-# and release number; by hand, release first and run
+# Golden path: the embedded v1 launches, a sync downloads the release and the next start runs it.
+# By hand, release v2 first, then run
 # `maestro test -e EXPECTED_VERSION=v2 -e EXPECTED_RELEASE_NUMBER=1 maestro/golden-path.yaml`.
-# No `env:` header: Maestro defines it after the `-e` parameters, so its
-# values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-# Every launch names its permissions: Maestro's default allows all, and its
-# location grant can hang the iOS simulator on Xcode 27 for minutes.
 - launchApp:
     clearState: true
     permissions:
       notifications: allow
-# A freshly booted simulator's first page can stall for seconds on the AppSSO
-# and GSSCred cold start, so the first read waits for it.
+# A freshly booted simulator can stall for seconds on the AppSSO and GSSCred cold start.
 - extendedWaitUntil:
     visible: 'v1'
     timeout: 30000
@@ -23,8 +16,7 @@ appId: com.hotcodepush.demo.cordova
 - extendedWaitUntil:
     notVisible: 'syncing…'
     timeout: 60000
-# A device that was offline retries on its next sync; a fresh emulator can be
-# offline for its first seconds, so the tap is repeated a bounded few times.
+# A fresh emulator can be offline for its first seconds, so the sync is retried.
 - repeat:
     times: 3
     while:
@@ -34,9 +26,8 @@ appId: com.hotcodepush.demo.cordova
       - extendedWaitUntil:
           notVisible: 'syncing…'
           timeout: 60000
-# The sync at start may have downloaded the release already; either way the
-# last sync settles on one of the two, and next_start applies it on the
-# relaunch.
+# The sync at start may have downloaded the release already.
+# Either way it applies on the next start.
 - assertVisible: '(downloaded|up_to_date).*'
 - stopApp
 - launchApp:

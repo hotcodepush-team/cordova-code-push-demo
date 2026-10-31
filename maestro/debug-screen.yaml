@@ -1,27 +1,21 @@
-# The debug screen: the button opens the SDK's screen, and the report it
-# shares as text answers why the device did not update — the line the runner
-# expects, the last check's code after incompatible.yaml, whose check skipped
-# a release. By hand:
+# The report the debug screen shares explains why the device did not update.
+# After incompatible.yaml, its result line names the skipped check.
+# By hand:
 # `maestro test -e EXPECTED_LINE='Result: skipped device_incompatible binary' maestro/debug-screen.yaml`.
-# No `env:` header: Maestro defines it after the `-e` parameters, so its
-# values would override them.
 appId: com.hotcodepush.demo.cordova
 ---
-# Every launch names its permissions: Maestro's default allows all, and its
-# location grant can hang the iOS simulator on Xcode 27 for minutes.
 - launchApp:
     permissions:
       notifications: allow
-# A web view that just loaded is empty in the view hierarchy for a moment, so
-# the tap waits for the button first.
+# A web view that just loaded shows an empty view hierarchy for a moment.
 - extendedWaitUntil:
     visible: 'Debug screen'
     timeout: 30000
 - tapOn: 'Debug screen'
 - assertVisible: 'Check now'
 - tapOn: 'Share'
-# iOS copies the shared report to the pasteboard, where the runner reads it;
-# Android's share sheet previews the text it was handed, read here.
+# On iOS the runner reads the report from the pasteboard.
+# On Android the share sheet previews the text.
 - runFlow:
     when:
       platform: iOS

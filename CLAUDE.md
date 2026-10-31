@@ -47,6 +47,14 @@ The CLI is pinned the same way, `https://pkg.pr.new/hotcodepush-team/cli/hotcode
 The SDK's cores come at the commits the SDK pins: the iOS one through Swift Package Manager, the Android one through core-android's `maven` branch, which the plugin adds to the app module's repositories.
 Every other dependency is pinned to an exact version and bumped by Renovate.
 
+## Comments
+
+- Comment only what the code cannot say: the why behind a choice, an outside quirk or limit, what a regex matches, a TODO with its issue link. Never what the code does.
+- Before adding a comment, try a clearer name or a small extracted function first.
+- One or two short plain sentences. Capital letter, full stop, own line above the code. No run-on sentences, no chains of possessives.
+- Doc comments (JSDoc, KDoc, `///`, docstrings) only on a package's public API: one line that says what it does, then only what a caller must know.
+- Never: section banners, commented-out code, change history, the same comment in two places.
+
 ## Agent workspace
 
 - `.mcp.json` is absent on purpose: no server covers Cordova's own documentation, and the HotCodePush server joins when it exists.

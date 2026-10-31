@@ -7,9 +7,8 @@
       content="default-src 'self' gap:; img-src 'self' data:"
     />
     <!--
-      No viewport-fit=cover: cordova-ios shows the web view only once the page has loaded and hands it the safe-area
-      insets after that, so a page that pads itself by them jumps right when it appears. Cordova insets the web view
-      instead and paints the strip behind the status bar in the theme colour, the page's background.
+      No viewport-fit=cover: cordova-ios passes the safe-area insets only after page load, so padding by them jumps.
+      Cordova insets the web view instead and paints the status bar strip in the theme colour.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
