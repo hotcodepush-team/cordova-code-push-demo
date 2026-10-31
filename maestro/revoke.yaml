@@ -1,21 +1,14 @@
-# The revoke: the app runs the newest release, the operator revokes it, and
-# the next check moves the device to the newest older release it qualifies
-# for, applied at once. Continues from golden-path.yaml, which left the app
-# on the release the runner then revoked; by hand, revoke the running release
-# and run `maestro test -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/revoke.yaml`.
-# The check at start may make the move itself, reloading the page in place,
-# and a reload that lands while Maestro reads leaves Android's view hierarchy
-# empty for the rest of the process, so the flow waits a bounded time for the
-# move and relaunches the app before it reads the screen.
-# No `env:` header: Maestro defines it after the `-e` parameters, so its
-# values would override them.
+# The running release is revoked.
+# The next check moves the device to the newest older release it qualifies for.
+# Continues from golden-path.yaml. By hand, revoke the running release, then run
+# `maestro test -e EXPECTED_RELEASE_NUMBER=1 -e EXPECTED_VERSION=v2 maestro/revoke.yaml`.
 appId: com.hotcodepush.demo.cordova
 ---
-# Every launch names its permissions: Maestro's default allows all, and its
-# location grant can hang the iOS simulator on Xcode 27 for minutes.
 - launchApp:
     permissions:
       notifications: allow
+# A page reload during a Maestro read can leave the Android view hierarchy empty for good.
+# The flow therefore relaunches the app before it reads the screen.
 - extendedWaitUntil:
     visible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
     timeout: 30000
@@ -24,16 +17,14 @@ appId: com.hotcodepush.demo.cordova
 - launchApp:
     permissions:
       notifications: allow
-# The check at start may move the device on its own; a tap does it otherwise,
-# repeated a bounded few times for a device that was offline.
+# The check at start may move the device on its own.
+# Otherwise a tap does, retried for an offline device.
 - repeat:
     times: 3
     while:
       notVisible: '#${EXPECTED_RELEASE_NUMBER} · ${EXPECTED_VERSION}'
     commands:
-      # A web view that just loaded, at the launch or on the apply the check
-      # at start triggers, is empty in the view hierarchy for a moment, so the
-      # tap waits for the button first.
+      # A web view that just loaded shows an empty view hierarchy for a moment.
       - extendedWaitUntil:
           visible: 'Sync now'
           timeout: 30000
