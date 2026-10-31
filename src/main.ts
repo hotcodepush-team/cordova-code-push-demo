@@ -5,9 +5,9 @@ import type {
   SyncResult,
 } from '@hotcodepush/cordova-code-push';
 
-// Change it, build, release: the label is how you see the update land.
+// Change this label, build and release it to see the update land.
 const VERSION = 'v1';
-// No channel of the demo's app is discoverable by this name, so a sync on it fails with channel_unknown.
+// The demo app has no discoverable channel with this name, so a sync on it fails with channel_unknown.
 const RUNTIME_CHANNEL_NAME = 'beta';
 const ROLLBACK_REASON = 'Roll back button';
 
@@ -29,9 +29,9 @@ const clearUpdatesButton = getElement<HTMLButtonElement>(
 );
 
 versionHeading.textContent = VERSION;
-// The plugin is on `window.HotCodePush` once Cordova has loaded it, which `deviceready` says.
+// Cordova fires `deviceready` once the plugin is loaded onto `window.HotCodePush`.
 document.addEventListener('deviceready', () => {
-  // Fired once, on the start that follows a rollback: the release that failed and why.
+  // The SDK fires this once, on the first start after a rollback.
   void HotCodePush.addListener('updateRolledBack', event => {
     lastRollbackText.textContent = `from ${resolveReleaseText(event.fromRelease)} · ${event.reason}`;
   });
@@ -45,7 +45,7 @@ document.addEventListener('deviceready', () => {
     () => void switchChannel({ name: RUNTIME_CHANNEL_NAME }),
   );
   clearChannelButton.addEventListener('click', () => void switchChannel(null));
-  // Both reload the page onto the bundle they leave running, which shows the outcome.
+  // Rolling back and clearing updates both reload the page, so the new page shows the outcome.
   rollbackButton.addEventListener(
     'click',
     () =>
