@@ -17,7 +17,7 @@
     "cordova": "13.0.0",
     "cordova-android": "15.1.0",
     "cordova-ios": "8.1.1",
-    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@5e67cbc7c62470018263fc0710c064868ebc8ce2",
+    "hotcodepush": "https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@f35aaf503dfe9e90c882ccfe1d9f5aacf8a1c93e",
     "prettier": "3.9.8",
     "typescript": "6.0.3",
     "vite": "8.3.5"
