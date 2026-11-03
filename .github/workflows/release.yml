@@ -25,7 +25,9 @@ jobs:
       - run: npm run build
       # The release runs the CLI that package.json pins, the one the native builds run, so one bump moves both.
       - id: cli
-        run: echo "spec=$(jq -r .devDependencies.hotcodepush package.json)" >> "$GITHUB_OUTPUT"
+        run: |
+          spec=$(jq -re .devDependencies.hotcodepush package.json)
+          echo "spec=$spec" >> "$GITHUB_OUTPUT"
       - uses: hotcodepush-team/release-action@6701b80821c77a041aa77d87fc88bda555c1a2cb # v0.2.0
         with:
           token: ${{ secrets.HOTCODEPUSH_TOKEN }}
