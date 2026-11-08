@@ -1,0 +1,38 @@
+name: Release to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A running release finishes first. Of the merges waiting behind it, only the newest runs, and it includes the others.
+concurrency:
+  group: release-${{ github.ref }}
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Build and release the web bundle
+    # A manual run releases main alone; a branch never ships to production.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # The release runs the CLI that package.json pins, the one the native builds run, so one bump moves both.
+      - id: cli
+        run: |
+          spec=$(jq -re .devDependencies.hotcodepush package.json)
+          echo "spec=$spec" >> "$GITHUB_OUTPUT"
+      - uses: hotcodepush-team/release-action@eefbfe59d6c6d648daf885867538fc62754f32a9 # v0.3.0
+        with:
+          token: ${{ secrets.HOTCODEPUSH_TOKEN }}
+          bundle-version: ${{ github.sha }}
+          cli-version: ${{ steps.cli.outputs.spec }}
