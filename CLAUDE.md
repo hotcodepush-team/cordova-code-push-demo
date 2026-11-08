@@ -42,7 +42,7 @@ The CLI is the `hotcodepush` devDependency, pinned to an exact npm release, so `
 
 ## Dependencies during the build phase
 
-The SDK is pinned to the pkg.pr.new build of one commit, `https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@<sha>`, never `@main`; a bump is one edit of that sha, and `package.json`'s `cordova.plugins` lists the plugin so `cordova prepare` restores it.
+The SDK is pinned to its published release, `0.1.0`, bumped by hand when the SDK releases, and `package.json`'s `cordova.plugins` lists the plugin so `cordova prepare` restores it.
 The CLI is pinned to an exact npm release in `devDependencies`, and the release workflow reads that pin as `cli-version`, so one bump moves the native builds and the release together.
 The SDK's cores come at the commits the SDK pins: the iOS one through Swift Package Manager, the Android one through core-android's `maven` branch, which the plugin adds to the app module's repositories.
 Every other dependency is pinned to an exact version and bumped by Renovate.
