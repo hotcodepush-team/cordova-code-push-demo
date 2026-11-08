@@ -13,7 +13,7 @@ When code and plan disagree, stop and surface it; never improvise.
 index.html, src/     the one screen: main.ts and style.css
 www/                 the web build, Vite's output and Cordova's input; not committed
 config.xml           the app: its id, its version, the cleartext exceptions for the local stack
-hotcodepush.json     the project's configuration, as `init` writes it; a placeholder app id until the app is created
+hotcodepush.json     the project's configuration, as `init` writes it; it names the demo's own app in the HotCodePush organization on production
 res/android/xml      the network security config config.xml copies into the Android project
 maestro/             the update lifecycle contract's flows
 platforms/, plugins/ Cordova's, restored by `cordova prepare` from package.json; not committed
@@ -37,13 +37,13 @@ The package is CommonJS on purpose: Cordova `require`s the scripts it generates 
 
 The SDK reads `www/hotcodepush.json` in each platform, from the app bundle on iOS and from `assets/` on Android: the project's file plus `builtAt`, `fingerprint`, `embeddedBundleManifest` and `embeddedBundleId`.
 The native build writes it: the plugin's Gradle task per variant and the Xcode phase its hook adds on `cordova platform add` and every `cordova prepare`, after Cordova copied `www/` into the platform. An archive or a release variant runs `binary create`, which also creates the store build's binary under the session or `HOTCODEPUSH_TOKEN`, the version and build read from the build itself; every other build runs `resource-file write`. Without a token on a person's machine, or with `HOTCODEPUSH_OFFLINE=1` as `ci.yml` sets it, the file names no channel and the app takes no updates; a pipeline's store build without either fails. `build.json` signs the Android release build with the debug keystore the Android Gradle plugin creates on the first debug build, so the device test installs the release APK a customer ships.
-The CLI is the `hotcodepush` devDependency, pinned like the SDK to the pkg.pr.new build of one commit, so `npx hotcodepush` resolves from `node_modules`.
+The CLI is the `hotcodepush` devDependency, pinned to an exact npm release, so `npx hotcodepush` resolves from `node_modules`.
 `HOTCODEPUSH_FILES_BASE_URL` and `HOTCODEPUSH_UPDATES_BASE_URL` point the SDK at another host, the local stack or staging.
 
 ## Dependencies during the build phase
 
 The SDK is pinned to the pkg.pr.new build of one commit, `https://pkg.pr.new/hotcodepush-team/cordova-code-push/@hotcodepush/cordova-code-push@<sha>`, never `@main`; a bump is one edit of that sha, and `package.json`'s `cordova.plugins` lists the plugin so `cordova prepare` restores it.
-The CLI is pinned the same way, `https://pkg.pr.new/hotcodepush-team/cli/hotcodepush@<sha>`.
+The CLI is pinned to an exact npm release in `devDependencies`, and the release workflow reads that pin as `cli-version`, so one bump moves the native builds and the release together.
 The SDK's cores come at the commits the SDK pins: the iOS one through Swift Package Manager, the Android one through core-android's `maven` branch, which the plugin adds to the app module's repositories.
 Every other dependency is pinned to an exact version and bumped by Renovate.
 

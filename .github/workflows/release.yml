@@ -3,6 +3,7 @@ name: Release to production
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 # A running release finishes first. Of the merges waiting behind it, only the newest runs, and it includes the others.
 concurrency:
@@ -14,6 +15,8 @@ permissions:
 jobs:
   release:
     name: Build and release the web bundle
+    # A manual run releases main alone; a branch never ships to production.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -28,10 +31,8 @@ jobs:
         run: |
           spec=$(jq -re .devDependencies.hotcodepush package.json)
           echo "spec=$spec" >> "$GITHUB_OUTPUT"
-      - uses: hotcodepush-team/release-action@6701b80821c77a041aa77d87fc88bda555c1a2cb # v0.2.0
+      - uses: hotcodepush-team/release-action@eefbfe59d6c6d648daf885867538fc62754f32a9 # v0.3.0
         with:
           token: ${{ secrets.HOTCODEPUSH_TOKEN }}
-          channel: production
-          # Staging until launch.
-          api-url: https://api.staging.hotcodepush.com
+          bundle-version: ${{ github.sha }}
           cli-version: ${{ steps.cli.outputs.spec }}
