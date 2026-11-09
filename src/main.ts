@@ -62,8 +62,27 @@ document.addEventListener('deviceready', () => {
         currentReleaseText,
       ),
   );
-  void showState();
+  void showState().then(followProductionWithoutToken);
 });
+
+// A build without a token carries no channel, and the SDK's own checks skip such a build. The demo
+// follows `production` by name instead, the channel its app flags discoverable, and syncs once.
+async function followProductionWithoutToken(): Promise<void> {
+  try {
+    const channel = await HotCodePush.getChannel();
+    if (channel.id !== null || channel.source === 'runtime') {
+      return;
+    }
+    await HotCodePush.setChannel({ name: 'production' });
+    channelText.textContent = resolveChannelText(
+      await HotCodePush.getChannel(),
+    );
+  } catch (error) {
+    lastSyncText.textContent = resolveErrorText(error);
+    return;
+  }
+  await syncNow();
+}
 
 async function showState(): Promise<void> {
   try {
