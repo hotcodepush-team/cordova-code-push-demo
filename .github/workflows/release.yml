@@ -45,7 +45,7 @@ jobs:
       # build.json signs with the debug keystore, which a fresh runner has not made yet.
       - run: mkdir -p ~/.android && keytool -genkeypair -keystore ~/.android/debug.keystore -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
       # Each run is its own store build, so the build number is the run number and a changed bundle never lands under an existing build.
-      - run: npx cordova compile android --release -- --packageType=apk --gradleArg=-Pandroid.injected.version.code="$GITHUB_RUN_NUMBER"
+      - run: npx cordova compile android --release -- --packageType=apk --versionCode="$GITHUB_RUN_NUMBER"
       - run: mv platforms/android/app/build/outputs/apk/release/app-release.apk hotcodepush-demo-cordova-android.apk
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
