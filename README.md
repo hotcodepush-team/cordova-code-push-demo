@@ -1,27 +1,82 @@
 # Cordova code push demo by HotCodePush
 
-The demo app for [Cordova code push](https://hotcodepush.com/cordova-code-push) with `@hotcodepush/cordova-code-push`: one screen showing the bundle version, the current release, the channel, the device id and the last rollback, with buttons that sync, open the debug screen, set or clear the channel, roll back and clear the updates.
+[![CI](https://github.com/hotcodepush-team/cordova-code-push-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/hotcodepush-team/cordova-code-push-demo/actions/workflows/ci.yml)
+[![Release](https://github.com/hotcodepush-team/cordova-code-push-demo/actions/workflows/release.yml/badge.svg)](https://github.com/hotcodepush-team/cordova-code-push-demo/actions/workflows/release.yml)
+
+A Cordova app with [`@hotcodepush/cordova-code-push`](https://github.com/hotcodepush-team/cordova-code-push) added, the way `npx hotcodepush init` adds it. It is pre-configured for a HotCodePush app on production. Install the download, open it and watch the first over-the-air (OTA) update land. No account, no setup. Every merge to `main` ships a release to that app through the [GitHub Action](https://github.com/hotcodepush-team/release-action), and CI builds both platforms.
+
+<p align="center">
+  <img src=".github/assets/screenshot.png" alt="The demo on an iPhone simulator, showing the version badge, the current release and the Sync now button" width="320" />
+</p>
+
+## Download
+
+The [downloads release](https://github.com/hotcodepush-team/cordova-code-push-demo/releases/tag/downloads) carries the app for Android and for the iOS simulator. Every merge to `main` rebuilds both, with the label `v1`, before it ships the update.
+
+```sh
+# Android, on a device or an emulator
+adb install hotcodepush-demo-cordova-android.apk
+
+# iOS simulator, booted from Xcode
+unzip hotcodepush-demo-cordova-ios-simulator.zip
+xcrun simctl install booted "HotCodePush Demo.app"
+```
+
+The app starts on `v1` and downloads `v2` on its first sync, the release `main` shipped after the build. Open it again and the badge reads `v2`.
+
+## What you will see
+
+- 🏷️ **A version badge** that changes without a store build, `v1` from the embedded bundle, then the label of the newest release.
+- 🔄 **Sync now**, one call to `sync()`, with the last result and the last rollback on screen.
+- 🛟 **Automatic rollback**: a release whose bundle never renders is rolled back on the next start, and the screen says so.
+- 🔍 **The debug screen**, the SDK's own view of the device, the channel and the last check, one tap away.
+- 🚀 **The release workflow**, `.github/workflows/release.yml`, the GitHub Action releasing the web build on every merge.
+
+## Tech stack
+
+cordova-ios 8 and cordova-android 15, Vite and TypeScript without a frontend framework, the HotCodePush Cordova SDK, Maestro for the device flows.
 
 ## Getting started
+
+### Prerequisites
+
+Node 24, as `.nvmrc` names it, and Xcode or Android Studio. A HotCodePush account is not needed to run the demo.
+
+### Run it
 
 ```sh
 nvm use
 npm ci
-npx hotcodepush login
 npm run build
 npx cordova prepare
-npx cordova run ios       # or: npx cordova run android
+npx cordova run ios
 ```
 
-`npx cordova prepare` restores the platforms and the plugin from `package.json` and copies the web build into each platform.
-Every native build runs the CLI's build step, which writes `hotcodepush.json` into the app; an archive or a release build also registers the store build in HotCodePush.
-Without a login the file names no channel and the app takes no updates.
-Set `HOTCODEPUSH_FILES_BASE_URL` and `HOTCODEPUSH_UPDATES_BASE_URL` before the native build to point it at the local stack or staging.
+Or `npx cordova run android`. `prepare` restores the platforms and the plugin from `package.json` and copies the web build into each platform. The app starts on its embedded bundle and syncs against the `production` channel of the demo's app. A build takes only releases created after it was built, so a fresh build answers `skipped · release_older_than_binary` until the next merge to `main` ships a release. That is what the download is for.
 
-## Usage
+### Ship an update of your own
 
-Run the app once: it shows `v1` and the current release `embedded`.
-Change `VERSION` in `src/main.ts`, run `npm run build`, release with `npx hotcodepush release create --path www`, and reopen the app to see the new label.
+Point the demo at an app of yours and release from your machine:
+
+```sh
+npx hotcodepush init
+npm run build && npx hotcodepush release create
+```
+
+`init` signs you in and rewrites `hotcodepush.json` with your app. Change `VERSION` in `src/main.ts` before the release, rebuild once so the store build registers itself, then reopen the app to see the new label.
+
+## Continuous integration
+
+`release.yml` runs on every merge to `main` and releases the web build to the demo's app:
+
+```yaml
+- uses: hotcodepush-team/release-action@v0.3.0
+  with:
+    token: ${{ secrets.HOTCODEPUSH_TOKEN }}
+    bundle-version: ${{ github.sha }}
+```
+
+`ci.yml` builds the app on both platforms with the plugin the repo pins and runs the Maestro flows in `maestro/` on the simulator and the emulator.
 
 ## Development
 
@@ -33,15 +88,11 @@ npm run lint && npm run typecheck
 npm run fmt              # run before every commit
 ```
 
-The flows in `maestro/` are the update lifecycle contract the monorepo's `e2e/` runner drives on the simulator and the emulator; each flow's header names what it expects.
-Flows set no `env:` header, since Maestro applies it after the `-e` parameters and would override them.
-Every `launchApp` names its permissions, since the default grants location, which can hang the iOS simulator on Xcode 27.
-By hand: install the app, release `v2`, then `maestro test -e EXPECTED_VERSION=v2 -e EXPECTED_RELEASE_NUMBER=1 maestro/golden-path.yaml`.
-`CLAUDE.md` holds the native build commands and the resource file's rules.
+`CLAUDE.md` holds the native build commands, the resource file's rules, the Maestro flows and the environment variables that point a build at a local stack.
 
 ## Documentation
 
-See [hotcodepush.com/docs/cordova](https://hotcodepush.com/docs/cordova).
+See [hotcodepush.com/docs/sdks/cordova](https://hotcodepush.com/docs/sdks/cordova).
 
 ## License
 
