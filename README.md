@@ -22,6 +22,12 @@ unzip hotcodepush-demo-cordova-ios-simulator.zip
 xcrun simctl install booted "HotCodePush Demo.app"
 ```
 
+<p>
+  <img src=".github/assets/qr-android.svg" alt="QR code with the Android download link" width="160" />
+</p>
+
+Scan the code on an Android phone to download the APK, and allow the install when Android asks.
+
 The app starts on `v1` and downloads `v2` on its first sync, the release `main` shipped after the build. Open it again and the badge reads `v2`.
 
 ## What you will see
