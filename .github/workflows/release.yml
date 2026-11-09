@@ -44,7 +44,8 @@ jobs:
       # A release build yields an app bundle by default, which a device cannot install.
       # build.json signs with the debug keystore, which a fresh runner has not made yet.
       - run: mkdir -p ~/.android && keytool -genkeypair -keystore ~/.android/debug.keystore -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
-      - run: npx cordova compile android --release -- --packageType=apk
+      # Each run is its own store build, so the build number is the run number and a changed bundle never lands under an existing build.
+      - run: npx cordova compile android --release -- --packageType=apk --versionCode="$GITHUB_RUN_NUMBER"
       - run: mv platforms/android/app/build/outputs/apk/release/app-release.apk hotcodepush-demo-cordova-android.apk
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -70,7 +71,7 @@ jobs:
       - run: npm run build
       - run: npx cordova prepare ios
       # An archive is the store build: its build step creates the binary, a plain build only writes the resource file.
-      - run: xcodebuild archive -workspace App.xcworkspace -scheme App -configuration Release -destination 'generic/platform=iOS Simulator' -archivePath build/App.xcarchive CODE_SIGNING_ALLOWED=NO -quiet
+      - run: xcodebuild archive -workspace App.xcworkspace -scheme App -configuration Release -destination 'generic/platform=iOS Simulator' -archivePath build/App.xcarchive CODE_SIGNING_ALLOWED=NO CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" -quiet
         working-directory: platforms/ios
       - run: ditto -c -k --keepParent "platforms/ios/build/App.xcarchive/Products/Release-iphonesimulator/HotCodePush Demo.app" hotcodepush-demo-cordova-ios-simulator.zip
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
