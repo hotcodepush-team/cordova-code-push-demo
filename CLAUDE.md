@@ -34,7 +34,7 @@ The native builds: `npx cordova compile ios --debug --emulator` and `npx cordova
 The package is CommonJS on purpose: Cordova `require`s the scripts it generates under `platforms/`, which an ES-module package would break.
 
 `release.yml` builds the downloads, the Android release APK and the iOS simulator app, on every merge to `main` with `HOTCODEPUSH_TOKEN`, so the build step writes the channel into the app.
-It stamps their label `v1`, publishes them as the rolling GitHub release `downloads` and ships the OTA release after them, so a download always takes the newest release and shows the label on `main`.
+It stamps their label `v1`, publishes them as the GitHub release `build/<run number>`, the newest marked latest, and ships the OTA release after them, so a download always takes the newest release and shows the label on `main`.
 
 ## The resource file
 

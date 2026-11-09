@@ -92,12 +92,13 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           merge-multiple: true
-      - run: gh release delete downloads --cleanup-tag --yes || true
+      # One release per store build, the newest marked latest, so releases/latest is always the newest download.
       - run: >-
-          gh release create downloads
+          gh release create "build/$GITHUB_RUN_NUMBER"
           --target "$GITHUB_SHA"
-          --title Downloads
-          --notes "The Android APK and the iOS simulator app of the demo, built from $GITHUB_SHA and pre-configured for the demo's app on production. Every merge to main rebuilds them."
+          --latest
+          --title "Build $GITHUB_RUN_NUMBER"
+          --notes "The Android APK and the iOS simulator app of the demo, built from $GITHUB_SHA and pre-configured for the demo's app on production."
           hotcodepush-demo-cordova-android.apk
           hotcodepush-demo-cordova-ios-simulator.zip
   release:
