@@ -33,6 +33,9 @@ Run `npm run fmt` before every commit.
 The native builds: `npx cordova compile ios --debug --emulator` and `npx cordova compile android --debug`, both after `npm run build && npx cordova prepare`; the store builds, which create the binary: `xcodebuild archive -workspace App.xcworkspace -scheme App -configuration Release -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO` in `platforms/ios`, the app landing at `Products/Release-iphonesimulator/HotCodePush Demo.app`, and `npx cordova build android --release -- --packageType=apk`, signed through `build.json` with the debug keystore.
 The package is CommonJS on purpose: Cordova `require`s the scripts it generates under `platforms/`, which an ES-module package would break.
 
+`release.yml` builds the downloads, the Android release APK and the iOS simulator app, on every merge to `main` with `HOTCODEPUSH_TOKEN`, so the build step writes the channel into the app.
+It stamps their label `v1`, publishes them as the rolling GitHub release `downloads` and ships the OTA release after them, so a download always takes the newest release and shows the label on `main`.
+
 ## The resource file
 
 The SDK reads `www/hotcodepush.json` in each platform, from the app bundle on iOS and from `assets/` on Android: the project's file plus `builtAt`, `fingerprint`, `embeddedBundleManifest` and `embeddedBundleId`.
