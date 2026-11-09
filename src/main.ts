@@ -6,7 +6,7 @@ import type {
 } from '@hotcodepush/cordova-code-push';
 
 // Change this label, build and release it to see the update land.
-const VERSION = 'v1';
+const VERSION = 'v2';
 // The demo app has no discoverable channel with this name, so a sync on it fails with channel_unknown.
 const RUNTIME_CHANNEL_NAME = 'beta';
 const ROLLBACK_REASON = 'Roll back button';
