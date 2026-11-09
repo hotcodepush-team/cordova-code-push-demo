@@ -12,7 +12,7 @@ concurrency:
   group: release-${{ github.ref }}
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   JAVA_VERSION: 21
@@ -80,6 +80,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: [android, ios]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
