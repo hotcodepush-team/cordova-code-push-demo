@@ -119,7 +119,7 @@ jobs:
         run: |
           spec=$(jq -re .devDependencies.hotcodepush package.json)
           echo "spec=$spec" >> "$GITHUB_OUTPUT"
-      - uses: hotcodepush-team/release-action@eefbfe59d6c6d648daf885867538fc62754f32a9 # v0.3.0
+      - uses: hotcodepush-team/release-action@dd9435499788701a7ebbc3454e751247dd8823d8 # v0.3.1
         with:
           token: ${{ secrets.HOTCODEPUSH_TOKEN }}
           bundle-version: ${{ github.sha }}

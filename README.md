@@ -76,7 +76,7 @@ npm run build && npx hotcodepush release create
 `release.yml` runs on every merge to `main` and releases the web build to the demo's app:
 
 ```yaml
-- uses: hotcodepush-team/release-action@v0.3.0
+- uses: hotcodepush-team/release-action@v0.3.1
   with:
     token: ${{ secrets.HOTCODEPUSH_TOKEN }}
     bundle-version: ${{ github.sha }}
